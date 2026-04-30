@@ -5,7 +5,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
-SHAMCASH_NUMBER = "093XXXXXXX"
+SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
 QR_LINK = "https://raw.githubusercontent.com/algaberali060/RagnarZ-bot/main/qr.jpg"
 
 # ===== قاعدة البيانات =====
@@ -153,7 +153,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # ===== الدعم =====
     elif text == "الدعم الفني 🛠":
-        await update.message.reply_text("📞 تواصل مع الدعم: @username")
+        await update.message.reply_text("📞 تواصل مع الدعم: @RagnarZ778")
 
     # ===== السجل =====
     elif text == "سجلك الخاص إيداع/سحب 📜":
