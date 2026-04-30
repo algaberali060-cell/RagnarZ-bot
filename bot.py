@@ -7,8 +7,10 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
+SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b" 
 SHAMCASH_CODE = "fdfe47be1ac0be961dc8889406830f9b"
-QR_IMAGE = "qr.jpg"
+QR_LINK = "https://raw.githubusercontent.com/algaberali060/RagnarZ-bot/main/qr.jpg"
+
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
 cursor = conn.cursor()
@@ -38,21 +40,10 @@ deposit_menu = [
     ["القائمة الرئيسية 🔙"]
 ]
 
-withdraw_menu = [
-    ["Syriatel Cash 🟢"],
-    ["Sham Cash (SYP) 🇸🇾"],
-    ["القائمة الرئيسية 🔙"]
-]
-
-records_menu = [
-    ["📥 سجل الإيداع", "📤 سجل السحب"],
-    ["القائمة الرئيسية 🔙"]
-]
-
 # ===== /start =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥",
+        "🔥 أهلاً وسهلاً في بوت 55bets RagnarZ 🔥",
         reply_markup=ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
     )
 
@@ -63,7 +54,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ===== شحن =====
     if text == "شحن الرصيد 💳":
         await update.message.reply_text(
-            "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥\n\nاختر طريقة الشحن:",
+            "اختر طريقة الشحن:",
             reply_markup=ReplyKeyboardMarkup(deposit_menu, resize_keyboard=True)
         )
 
@@ -72,7 +63,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"📨 ارسل الى العنوان:\n\n"
             f"{SHAMCASH_NUMBER}\n\n"
             f"💳 كود الدفع:\n{SHAMCASH_CODE}\n\n"
-            f"علي محمد"🔻\n\n"
+            f"🔻 علي محمد 🔻\n\n"
             f"⚠️ لا تقم بإخفاء هوية الحساب\n\n"
             f"🔢 ثم ادخل رقم العملية\n\n"
             f"💱 1 ShamCash USD = 11800"
@@ -88,7 +79,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=ReplyKeyboardMarkup(qr_menu, resize_keyboard=True)
         )
 
-    # ===== عرض QR (مصلح 100%) =====
+    # ===== عرض QR =====
     elif text == "📱 عرض الباركود":
         try:
             response = requests.get(QR_LINK)
@@ -96,24 +87,13 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             bio.name = "qr.jpg"
 
             await update.message.reply_photo(photo=bio)
-        except Exception as e:
-            await update.message.reply_text(f"❌ خطأ بالصورة: {e}")
+        except:
+            await update.message.reply_text("❌ فشل تحميل الباركود")
 
-    # ===== سحب =====
-    elif text == "سحب الأرباح 💰":
-        await update.message.reply_text(
-            "اختر طريقة السحب:",
-            reply_markup=ReplyKeyboardMarkup(withdraw_menu, resize_keyboard=True)
-        )
-
-    # ===== دعم =====
-    elif text == "الدعم الفني 🛠":
-        await update.message.reply_text("📞 الدعم: @RagnarZ777")
-
-    # ===== باقي =====
+    # ===== رجوع =====
     elif text == "القائمة الرئيسية 🔙":
         await update.message.reply_text(
-            "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥",
+            "القائمة الرئيسية:",
             reply_markup=ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
         )
 
