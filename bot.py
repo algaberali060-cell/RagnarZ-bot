@@ -5,8 +5,8 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
-SHAMCASH_NUMBER = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"  # حط رقمك هون
-QR_IMAGE = "qr.jpg"  #
+SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
+QR_LINK = "https://raw.githubusercontent.com/algaberali060/RagnarZ-bot/main/qr.jpg"
 
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
@@ -32,15 +32,18 @@ main_menu = [
 
 deposit_menu = [
     ["Syriatel Cash 🟢 🎁 +5% بونص"],
-    ["USDT 🎁 5%"],
-    ["Sham Cash ⚡"],
+    ["عملات ومحافظ رقمية (USDT) 🎁 5% بونص"],
+    ["Sham Cash ⚡ (USD , SYP) 🎁 +5%"],
     ["القائمة الرئيسية 🔙"]
 ]
 
 withdraw_menu = [
     ["Syriatel Cash 🟢"],
-    ["Sham Cash 🇸🇾"],
-    ["USDT"],
+    ["حوالة 🏦", "Payeer $"],
+    ["Sham Cash (SYP) 🇸🇾"],
+    ["$ Sham Cash (USD)"],
+    ["Coine x", "Cwallet"],
+    ["Usdt Bep 20", "Usdt trc20"],
     ["القائمة الرئيسية 🔙"]
 ]
 
@@ -86,6 +89,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ===== الردود =====
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
+    user_id = update.effective_user.id
 
     # ===== شحن =====
     if text == "شحن الرصيد 💳":
@@ -95,17 +99,14 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     elif "Sham Cash" in text:
-    await update.message.reply_text(
-        f"💰 شحن عبر شام كاش\n\n"
-        f"📱 الرقم: {SHAMCASH_NUMBER}\n\n"
-        f"ارسل رقم عملية التحويل"
-    )
+        await update.message.reply_text(
+            f"💰 شحن عبر شام كاش\n\n"
+            f"📱 الرقم: {SHAMCASH_NUMBER}\n\n"
+            f"📸 أرسل صورة التحويل بعد الدفع"
+        )
 
-    try:
-        with open(QR_IMAGE, "rb") as photo:
-            await update.message.reply_photo(photo=photo)
-    except:
-        await update.message.reply_text("⚠️ الصورة ما انقرأت")
+        await update.message.reply_photo(photo=QR_LINK)
+
     # ===== سحب =====
     elif text == "سحب الأرباح 💰":
         await update.message.reply_text(
@@ -113,13 +114,11 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=ReplyKeyboardMarkup(withdraw_menu, resize_keyboard=True)
         )
 
-    elif text == "Sham Cash 🇸🇾":
+    elif "Sham Cash (SYP)" in text or "Sham Cash (USD)" in text:
         await update.message.reply_text("💸 أرسل رقمك لاستلام الحوالة")
 
     # ===== إحالات =====
     elif text == "روابط و نظام الإحالات 👥":
-        user_id = update.effective_user.id
-
         cursor.execute("SELECT referrals FROM users WHERE user_id=?", (user_id,))
         result = cursor.fetchone()
         count = result[0] if result else 0
@@ -130,6 +129,31 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             f"👥 رابطك:\n{link}\n\n👤 عدد الإحالات: {count}"
         )
+
+    # ===== إرسال رصيد =====
+    elif text == "إرسال رصيد لصديق 📩":
+        await update.message.reply_text("📩 أرسل آيدي الشخص والمبلغ")
+
+    # ===== كود هدية =====
+    elif text == "تفعيل كود هدية 🎁":
+        await update.message.reply_text("🎁 أرسل كود الهدية")
+
+    # ===== الدعم =====
+    elif text == "الدعم الفني 🛠":
+        await update.message.reply_text("📞 تواصل مع الدعم: @username")
+
+    # ===== السجل =====
+    elif text == "سجلك الخاص إيداع/سحب 📜":
+        await update.message.reply_text(
+            "📜 اختر:",
+            reply_markup=ReplyKeyboardMarkup(records_menu, resize_keyboard=True)
+        )
+
+    elif text == "📥 سجل الإيداع":
+        await update.message.reply_text("📥 لا يوجد عمليات")
+
+    elif text == "📤 سجل السحب":
+        await update.message.reply_text("📤 لا يوجد عمليات")
 
     # ===== رجوع =====
     elif text == "القائمة الرئيسية 🔙":
