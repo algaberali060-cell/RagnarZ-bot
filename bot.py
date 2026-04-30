@@ -4,9 +4,7 @@ from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = os.getenv("TOKEN")
-
-# 🔥 كود الشام كاش تبعك
-SHAM_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
+SHAM_NUMBER = os.getenv("SHAM_NUMBER")  # حساب الشام كاش
 
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
@@ -15,6 +13,8 @@ cursor = conn.cursor()
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
+    referrer INTEGER,
+    referrals INTEGER DEFAULT 0,
     balance REAL DEFAULT 0
 )
 """)
@@ -27,25 +27,36 @@ CREATE TABLE IF NOT EXISTS transactions (
     status TEXT
 )
 """)
-
 conn.commit()
-
-# ===== متغيرات =====
-user_state = {}
-
-# 🔥 آيديك
-ADMIN_ID = 8589599931
 
 # ===== القوائم =====
 main_menu = [
-    ["شحن الرصيد 💳"],
-    ["رصيدي 💰"]
+    ["شحن الرصيد 💳", "سحب الأرباح 💰"],
+    ["روابط و نظام الإحالات 👥"],
+    ["إرسال رصيد لصديق 📩", "تفعيل كود هدية 🎁"],
+    ["الدعم الفني 🛠"],
+    ["سجلك الخاص إيداع/سحب 📜"]
 ]
 
 deposit_menu = [
-    ["Sham Cash ⚡"],
-    ["عرض الباركود 📱"],
-    ["أرسلت التحويل ✅"],
+    ["Syriatel Cash 🟢 🎁 +5% بونص"],
+    ["عملات ومحافظ رقمية (USDT) 🎁 5% بونص"],
+    ["Sham Cash Auto ⚡ (USD , SYP) 🎁 +5%"],
+    ["القائمة الرئيسية 🔙"]
+]
+
+withdraw_menu = [
+    ["Syriatel Cash 🟢"],
+    ["حوالة 🏦", "Payeer $"],
+    ["Sham Cash (SYP) 🇸🇾"],
+    ["$ Sham Cash (USD)"],
+    ["Coine x", "Cwallet"],
+    ["Usdt Bep 20", "Usdt trc20"],
+    ["القائمة الرئيسية 🔙"]
+]
+
+records_menu = [
+    ["📥 سجل الإيداع", "📤 سجل السحب"],
     ["القائمة الرئيسية 🔙"]
 ]
 
@@ -54,94 +65,105 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
     cursor.execute("SELECT * FROM users WHERE user_id=?", (user_id,))
-    if not cursor.fetchone():
-        cursor.execute("INSERT INTO users (user_id) VALUES (?)", (user_id,))
+    user = cursor.fetchone()
+
+    if not user:
+        referrer = None
+
+        if context.args:
+            try:
+                referrer = int(context.args[0])
+            except:
+                referrer = None
+
+        cursor.execute(
+            "INSERT INTO users (user_id, referrer, referrals) VALUES (?, ?, 0)",
+            (user_id, referrer)
+        )
         conn.commit()
 
+        if referrer and referrer != user_id:
+            cursor.execute(
+                "UPDATE users SET referrals = referrals + 1 WHERE user_id=?",
+                (referrer,)
+            )
+            conn.commit()
+
     await update.message.reply_text(
-        "اهلا بك 👋",
+        "اهلا بك في بوت 55bets",
         reply_markup=ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
     )
-
-# ===== الموافقة =====
-async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        return
-
-    txid = context.args[0]
-
-    cursor.execute("SELECT user_id, amount, status FROM transactions WHERE txid=?", (txid,))
-    data = cursor.fetchone()
-
-    if not data:
-        await update.message.reply_text("❌ العملية غير موجودة")
-        return
-
-    user_id, amount, status = data
-
-    if status == "approved":
-        await update.message.reply_text("❌ تمت الموافقة مسبقاً")
-        return
-
-    cursor.execute("UPDATE transactions SET status='approved' WHERE txid=?", (txid,))
-    cursor.execute("UPDATE users SET balance = balance + ? WHERE user_id=?", (amount, user_id))
-    conn.commit()
-
-    await context.bot.send_message(user_id, f"✅ تم شحن {amount}")
-    await update.message.reply_text("✅ تم قبول العملية")
-
-# ===== الرفض =====
-async def reject(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        return
-
-    txid = context.args[0]
-
-    cursor.execute("SELECT status FROM transactions WHERE txid=?", (txid,))
-    data = cursor.fetchone()
-
-    if not data:
-        await update.message.reply_text("❌ العملية غير موجودة")
-        return
-
-    if data[0] == "approved":
-        await update.message.reply_text("❌ لا يمكن رفض عملية مقبولة")
-        return
-
-    cursor.execute("UPDATE transactions SET status='rejected' WHERE txid=?", (txid,))
-    conn.commit()
-
-    await update.message.reply_text("❌ تم رفض العملية")
 
 # ===== الردود =====
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     user_id = update.effective_user.id
 
+    # ===== شحن =====
     if text == "شحن الرصيد 💳":
         await update.message.reply_text(
-            "اختر طريقة الشحن",
+            "اختر أحد طرق الشحن",
             reply_markup=ReplyKeyboardMarkup(deposit_menu, resize_keyboard=True)
         )
 
-    elif text == "Sham Cash ⚡":
+    # ===== سحب =====
+    elif text == "سحب الأرباح 💰":
+        await update.message.reply_text(
+            "اختر أحد الطرق",
+            reply_markup=ReplyKeyboardMarkup(withdraw_menu, resize_keyboard=True)
+        )
+
+    # ===== الإحالات =====
+    elif text == "روابط و نظام الإحالات 👥":
+        cursor.execute("SELECT referrals FROM users WHERE user_id=?", (user_id,))
+        result = cursor.fetchone()
+        count = result[0] if result else 0
+
+        bot_username = (await context.bot.get_me()).username
+        link = f"https://t.me/{bot_username}?start={user_id}"
+
+        await update.message.reply_text(
+            f"👥 نظام الإحالات\n\n"
+            f"🔗 رابطك:\n{link}\n\n"
+            f"👤 عدد الإحالات: {count}",
+            reply_markup=ReplyKeyboardMarkup([["القائمة الرئيسية 🔙"]], resize_keyboard=True)
+        )
+
+    # ===== إرسال رصيد لصديق =====
+    elif text == "إرسال رصيد لصديق 📩":
+        await update.message.reply_text("📩 أرسل آيدي الشخص والمبلغ")
+
+    # ===== كود هدية =====
+    elif text == "تفعيل كود هدية 🎁":
+        await update.message.reply_text("🎁 أرسل كود الهدية")
+
+    # ===== الدعم الفني =====
+    elif text == "الدعم الفني 🛠":
+        await update.message.reply_text("📞 تواصل مع الدعم: @username")
+
+    # ===== السجل =====
+    elif text == "سجلك الخاص إيداع/سحب 📜":
+        await update.message.reply_text(
+            "📜 اختر",
+            reply_markup=ReplyKeyboardMarkup(records_menu, resize_keyboard=True)
+        )
+
+    elif text == "📥 سجل الإيداع":
+        await update.message.reply_text("📥 لا يوجد عمليات")
+
+    elif text == "📤 سجل السحب":
+        await update.message.reply_text("📤 لا يوجد عمليات")
+
+    # ===== الشحن عبر الشام كاش =====
+    elif text == "Sham Cash Auto ⚡ (USD , SYP) 🎁 +5%":
         await update.message.reply_text(
             f"📩 ارسل الى العنوان:\n\n{SHAM_NUMBER}\n\n"
             "♦ مركز شام للاتصالات ♦\n\n"
             "⚠️ لا تقم بإخفاء هوية حسابك\n\n"
             "💰 ثم ادخل رقم العملية\n\n"
             "1 ShamCash USD = 11800\n\n"
-            "اضغط على (عرض الباركود 📱)"
+            "اضغط على زر (أرسلت التحويل)"
         )
-
-    elif text == "عرض الباركود 📱":
-        try:
-            await update.message.reply_photo(
-                photo=open("qr.png", "rb"),
-                caption="📱 هذا هو باركود الشحن"
-            )
-        except:
-            await update.message.reply_text("⚠️ لم يتم رفع صورة الباركود بعد")
 
     elif text == "أرسلت التحويل ✅":
         user_state[user_id] = "amount"
@@ -187,6 +209,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         balance = cursor.fetchone()[0]
         await update.message.reply_text(f"💰 رصيدك: {balance}")
 
+    # ===== العودة للقائمة الرئيسية =====
     elif text == "القائمة الرئيسية 🔙":
         await update.message.reply_text(
             "القائمة الرئيسية",
@@ -194,16 +217,14 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     else:
-        await update.message.reply_text("اختر من القائمة")
+        await update.message.reply_text("اختر من القائمة 👇")
 
-# ===== تشغيل =====
+# ===== تشغيل التطبيق =====
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("approve", approve))
-app.add_handler(CommandHandler("reject", reject))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
 print("Bot is running...")
 
-app.run_polling()
+app.run_polling() 
