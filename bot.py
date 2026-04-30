@@ -1,13 +1,11 @@
 import sqlite3
-import os
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup, InputFile
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
-# ===== التوكن من Railway =====
-TOKEN = os.getenv("TOKEN")
+TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
-# ===== إعدادات شام كاش =====
-SHAMCASH_NUMBER = "093XXXXXXX"  # حط رقمك هون
+# ===== معلوماتك =====
+SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
 QR_IMAGE = "IMG_٢٠٢٦٠٤٣٠_٢٠١٩٤٦.jpg"
 
 # ===== قاعدة البيانات =====
@@ -27,11 +25,27 @@ conn.commit()
 main_menu = [
     ["شحن الرصيد 💳", "سحب الأرباح 💰"],
     ["روابط و نظام الإحالات 👥"],
-    ["الدعم الفني 🛠"]
+    ["إرسال رصيد لصديق 📩", "تفعيل كود هدية 🎁"],
+    ["الدعم الفني 🛠"],
+    ["سجلك الخاص إيداع/سحب 📜"]
 ]
 
 deposit_menu = [
-    ["شام كاش 📲"],
+    ["Syriatel Cash 🟢 🎁 +5% بونص"],
+    ["USDT 🎁 5%"],
+    ["Sham Cash ⚡"],
+    ["القائمة الرئيسية 🔙"]
+]
+
+withdraw_menu = [
+    ["Syriatel Cash 🟢"],
+    ["Sham Cash 🇸🇾"],
+    ["USDT"],
+    ["القائمة الرئيسية 🔙"]
+]
+
+records_menu = [
+    ["📥 سجل الإيداع", "📤 سجل السحب"],
     ["القائمة الرئيسية 🔙"]
 ]
 
@@ -65,41 +79,48 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             conn.commit()
 
     await update.message.reply_text(
-        "🔥 أهلاً بك في بوت 55bets",
+        "🔥 أهلاً بك في بوت 55bets 🔥",
         reply_markup=ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
     )
 
-# ===== التعامل مع الأزرار =====
+# ===== الردود =====
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    user_id = update.effective_user.id
 
     # ===== شحن =====
     if text == "شحن الرصيد 💳":
         await update.message.reply_text(
-            "💳 اختر طريقة الدفع",
+            "اختر طريقة الشحن:",
             reply_markup=ReplyKeyboardMarkup(deposit_menu, resize_keyboard=True)
         )
 
-    # ===== شام كاش =====
-    elif text == "شام كاش 📲":
+    elif text == "Sham Cash ⚡":
+        await update.message.reply_text(
+            f"💰 شحن عبر شام كاش\n\n"
+            f"📱 الرقم: {SHAMCASH_NUMBER}\n\n"
+            f"📸 أرسل صورة التحويل بعد الدفع"
+        )
+
+        # إرسال QR
         try:
-            with open(QR_IMAGE, "rb") as photo:
-                await update.message.reply_photo(
-                    photo,
-                    caption=f"📲 الدفع عبر شام كاش\n\n"
-                            f"📞 الرقم: {SHAMCASH_NUMBER}\n\n"
-                            f"⚠️ بعد التحويل أرسل صورة التحويل للدعم"
-                )
+            await update.message.reply_photo(photo=InputFile(QR_IMAGE))
         except:
-            await update.message.reply_text("❌ لم يتم العثور على صورة الباركود")
+            await update.message.reply_text("⚠️ تأكد أن صورة QR مرفوعة على GitHub")
 
     # ===== سحب =====
     elif text == "سحب الأرباح 💰":
-        await update.message.reply_text("💰 سيتم إضافة طرق السحب قريباً")
+        await update.message.reply_text(
+            "اختر طريقة السحب:",
+            reply_markup=ReplyKeyboardMarkup(withdraw_menu, resize_keyboard=True)
+        )
 
-    # ===== الإحالات =====
+    elif text == "Sham Cash 🇸🇾":
+        await update.message.reply_text("💸 أرسل رقمك لاستلام الحوالة")
+
+    # ===== إحالات =====
     elif text == "روابط و نظام الإحالات 👥":
+        user_id = update.effective_user.id
+
         cursor.execute("SELECT referrals FROM users WHERE user_id=?", (user_id,))
         result = cursor.fetchone()
         count = result[0] if result else 0
@@ -108,17 +129,10 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         link = f"https://t.me/{bot_username}?start={user_id}"
 
         await update.message.reply_text(
-            f"👥 نظام الإحالات\n\n"
-            f"🔗 رابطك:\n{link}\n\n"
-            f"👤 عدد الإحالات: {count}",
-            reply_markup=ReplyKeyboardMarkup([["القائمة الرئيسية 🔙"]], resize_keyboard=True)
+            f"👥 رابطك:\n{link}\n\n👤 عدد الإحالات: {count}"
         )
 
-    # ===== دعم =====
-    elif text == "الدعم الفني 🛠":
-        await update.message.reply_text("📞 تواصل: @username")
-
-    # ===== رجوع =====
+    # ===== باقي =====
     elif text == "القائمة الرئيسية 🔙":
         await update.message.reply_text(
             "🏠 القائمة الرئيسية",
@@ -126,7 +140,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     else:
-        await update.message.reply_text("❗ اختر من القائمة")
+        await update.message.reply_text("اختر من القائمة 👇")
 
 # ===== تشغيل =====
 app = ApplicationBuilder().token(TOKEN).build()
@@ -134,4 +148,4 @@ app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT, handle))
 
-app.run_polling() 
+app.run_polling()
