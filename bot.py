@@ -5,8 +5,8 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
-SHAMCASH_NUMBER = "093XXXXXXX"  # حط رقمك هون
-QR_IMAGE = "qr.jpg"  # ✅ تم تعديل الاسم
+SHAMCASH_NUMBER = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"  # حط رقمك هون
+QR_IMAGE = "qr.jpg"  #
 
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
