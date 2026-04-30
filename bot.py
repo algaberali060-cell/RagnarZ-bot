@@ -5,7 +5,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
-SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
+SHAMCASH_NUMBER = "093XXXXXXX"
 QR_LINK = "https://raw.githubusercontent.com/algaberali060/RagnarZ-bot/main/qr.jpg"
 
 # ===== قاعدة البيانات =====
@@ -33,7 +33,7 @@ main_menu = [
 deposit_menu = [
     ["Syriatel Cash 🟢 🎁 +5% بونص"],
     ["عملات ومحافظ رقمية (USDT) 🎁 5% بونص"],
-    ["Sham Cash ⚡ (USD , SYP) 🎁 +5%"],
+    ["Sham Cash Auto ⚡ (USD , SYP) 🎁 +5%"],
     ["القائمة الرئيسية 🔙"]
 ]
 
@@ -82,7 +82,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             conn.commit()
 
     await update.message.reply_text(
-        "🔥 أهلاً بك في بوت 55bets 🔥",
+        "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥",
         reply_markup=ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
     )
 
@@ -94,27 +94,38 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ===== شحن =====
     if text == "شحن الرصيد 💳":
         await update.message.reply_text(
-            "اختر طريقة الشحن:",
+            "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥\n\nاختر طريقة الشحن:",
             reply_markup=ReplyKeyboardMarkup(deposit_menu, resize_keyboard=True)
         )
 
-    elif "Sham Cash" in text:
+    elif "Sham Cash Auto" in text:
         await update.message.reply_text(
-            f"💰 شحن عبر شام كاش\n\n"
-            f"📱 الرقم: {SHAMCASH_NUMBER}\n\n"
-            f"📸 أرسل صورة التحويل بعد الدفع"
+            f"📨 ارسل الى العنوان:\n\n"
+            f"{SHAMCASH_NUMBER}\n\n"
+            f"🔻 مركز شامر للاتصالات 🔻\n\n"
+            f"⚠️ من فضلك لا تقم بإخفاء هوية حساب شام كاش الذي تقوم بالشحن منه\n\n"
+            f"🔢 ثم ادخل رقم العملية\n\n"
+            f"💱 1 ShamCash USD = 11800"
         )
 
+        qr_button = [["📱 عرض الباركود"], ["القائمة الرئيسية 🔙"]]
+
+        await update.message.reply_text(
+            "🔷 لعرض باركود شام كاش، اضغط على الزر أدناه:",
+            reply_markup=ReplyKeyboardMarkup(qr_button, resize_keyboard=True)
+        )
+
+    elif text == "📱 عرض الباركود":
         await update.message.reply_photo(photo=QR_LINK)
 
     # ===== سحب =====
     elif text == "سحب الأرباح 💰":
         await update.message.reply_text(
-            "اختر طريقة السحب:",
+            "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥\n\nاختر طريقة السحب:",
             reply_markup=ReplyKeyboardMarkup(withdraw_menu, resize_keyboard=True)
         )
 
-    elif "Sham Cash (SYP)" in text or "Sham Cash (USD)" in text:
+    elif text == "Sham Cash (SYP) 🇸🇾":
         await update.message.reply_text("💸 أرسل رقمك لاستلام الحوالة")
 
     # ===== إحالات =====
@@ -127,7 +138,9 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         link = f"https://t.me/{bot_username}?start={user_id}"
 
         await update.message.reply_text(
-            f"👥 رابطك:\n{link}\n\n👤 عدد الإحالات: {count}"
+            f"🔥 أهلاً بك في بوت 55bets RagnarZ 🔥\n\n"
+            f"🔗 رابطك:\n{link}\n\n"
+            f"👤 عدد الإحالات: {count}"
         )
 
     # ===== إرسال رصيد =====
@@ -158,7 +171,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ===== رجوع =====
     elif text == "القائمة الرئيسية 🔙":
         await update.message.reply_text(
-            "🏠 القائمة الرئيسية",
+            "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥",
             reply_markup=ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
         )
 
