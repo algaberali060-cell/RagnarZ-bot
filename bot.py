@@ -72,7 +72,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"📨 ارسل الى العنوان:\n\n"
             f"{SHAMCASH_NUMBER}\n\n"
             f"💳 كود الدفع:\n{SHAMCASH_CODE}\n\n"
-            f"🔻 مركز شامر للاتصالات 🔻\n\n"
+            f"علي محمد"🔻\n\n"
             f"⚠️ لا تقم بإخفاء هوية الحساب\n\n"
             f"🔢 ثم ادخل رقم العملية\n\n"
             f"💱 1 ShamCash USD = 11800"
