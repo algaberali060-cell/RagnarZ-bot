@@ -94,7 +94,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=ReplyKeyboardMarkup(deposit_menu, resize_keyboard=True)
         )
 
-    elif text == "Sham Cash ⚡":
+    elif "Sham Cash" in text:
         await update.message.reply_text(
             f"💰 شحن عبر شام كاش\n\n"
             f"📱 الرقم: {SHAMCASH_NUMBER}\n\n"
