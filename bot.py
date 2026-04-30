@@ -95,19 +95,17 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     elif "Sham Cash" in text:
-        await update.message.reply_text(
-            f"💰 شحن عبر شام كاش\n\n"
-            f"📱 الرقم: {SHAMCASH_NUMBER}\n\n"
-            f"📸 أرسل صورة التحويل بعد الدفع"
-        )
+    await update.message.reply_text(
+        f"💰 شحن عبر شام كاش\n\n"
+        f"📱 الرقم: {SHAMCASH_NUMBER}\n\n"
+        f"📸 أرسل صورة التحويل بعد الدفع"
+    )
 
-        # ✅ إرسال QR (معدل)
-        try:
-            with open(QR_IMAGE, "rb") as photo:
-                await update.message.reply_photo(photo=photo)
-        except:
-            await update.message.reply_text("⚠️ تأكد أن صورة QR مرفوعة على GitHub وبنفس الاسم")
-
+    try:
+        with open(QR_IMAGE, "rb") as photo:
+            await update.message.reply_photo(photo=photo)
+    except:
+        await update.message.reply_text("⚠️ الصورة ما انقرأت")
     # ===== سحب =====
     elif text == "سحب الأرباح 💰":
         await update.message.reply_text(
