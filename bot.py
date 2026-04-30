@@ -4,7 +4,9 @@ from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = os.getenv("TOKEN")
-SHAM_NUMBER = os.getenv("SHAM_NUMBER")
+
+# 🔥 كود الشام كاش تبعك
+SHAM_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
 
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
@@ -31,7 +33,8 @@ conn.commit()
 # ===== متغيرات =====
 user_state = {}
 
-ADMIN_ID = 8589599931  # 👈 حط آيديك هون
+# 🔥 آيديك
+ADMIN_ID = 8589599931
 
 # ===== القوائم =====
 main_menu = [
@@ -41,6 +44,7 @@ main_menu = [
 
 deposit_menu = [
     ["Sham Cash ⚡"],
+    ["عرض الباركود 📱"],
     ["أرسلت التحويل ✅"],
     ["القائمة الرئيسية 🔙"]
 ]
@@ -122,8 +126,22 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif text == "Sham Cash ⚡":
         await update.message.reply_text(
-            f"💸 حول عبر Sham Cash\n\n📱 الرقم: {SHAM_NUMBER}\n\nثم اضغط (أرسلت التحويل)"
+            f"📩 ارسل الى العنوان:\n\n{SHAM_NUMBER}\n\n"
+            "♦ مركز شام للاتصالات ♦\n\n"
+            "⚠️ لا تقم بإخفاء هوية حسابك\n\n"
+            "💰 ثم ادخل رقم العملية\n\n"
+            "1 ShamCash USD = 11800\n\n"
+            "اضغط على (عرض الباركود 📱)"
         )
+
+    elif text == "عرض الباركود 📱":
+        try:
+            await update.message.reply_photo(
+                photo=open("qr.png", "rb"),
+                caption="📱 هذا هو باركود الشحن"
+            )
+        except:
+            await update.message.reply_text("⚠️ لم يتم رفع صورة الباركود بعد")
 
     elif text == "أرسلت التحويل ✅":
         user_state[user_id] = "amount"
