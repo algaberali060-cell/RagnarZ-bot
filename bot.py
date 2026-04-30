@@ -105,7 +105,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             await update.message.reply_photo(photo=InputFile(QR_IMAGE))
         except:
-            await update.message.reply_text("⚠️ تأكد أن صورة QR مرفوعة على GitHub")
+            await update.message.reply_text("IMG_٢٠٢٦٠٤٣٠_٢٠١٩٤٦.jpg")
 
     # ===== سحب =====
     elif text == "سحب الأرباح 💰":
