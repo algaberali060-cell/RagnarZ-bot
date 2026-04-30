@@ -1,11 +1,13 @@
 import sqlite3
+import requests
+from io import BytesIO
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
-SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
+SHAMCASH_CODE = "fdfe47be1ac0be961dc8889406830f9b"
 QR_LINK = "https://raw.githubusercontent.com/algaberali060/RagnarZ-bot/main/qr.jpg"
 
 # ===== قاعدة البيانات =====
@@ -39,11 +41,7 @@ deposit_menu = [
 
 withdraw_menu = [
     ["Syriatel Cash 🟢"],
-    ["حوالة 🏦", "Payeer $"],
     ["Sham Cash (SYP) 🇸🇾"],
-    ["$ Sham Cash (USD)"],
-    ["Coine x", "Cwallet"],
-    ["Usdt Bep 20", "Usdt trc20"],
     ["القائمة الرئيسية 🔙"]
 ]
 
@@ -54,33 +52,6 @@ records_menu = [
 
 # ===== /start =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-
-    cursor.execute("SELECT * FROM users WHERE user_id=?", (user_id,))
-    user = cursor.fetchone()
-
-    if not user:
-        referrer = None
-
-        if context.args:
-            try:
-                referrer = int(context.args[0])
-            except:
-                pass
-
-        cursor.execute(
-            "INSERT INTO users (user_id, referrer, referrals) VALUES (?, ?, 0)",
-            (user_id, referrer)
-        )
-        conn.commit()
-
-        if referrer and referrer != user_id:
-            cursor.execute(
-                "UPDATE users SET referrals = referrals + 1 WHERE user_id=?",
-                (referrer,)
-            )
-            conn.commit()
-
     await update.message.reply_text(
         "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥",
         reply_markup=ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
@@ -89,7 +60,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ===== الردود =====
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    user_id = update.effective_user.id
 
     # ===== شحن =====
     if text == "شحن الرصيد 💳":
@@ -102,73 +72,46 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             f"📨 ارسل الى العنوان:\n\n"
             f"{SHAMCASH_NUMBER}\n\n"
+            f"💳 كود الدفع:\n{SHAMCASH_CODE}\n\n"
             f"🔻 مركز شامر للاتصالات 🔻\n\n"
-            f"⚠️ من فضلك لا تقم بإخفاء هوية حساب شام كاش الذي تقوم بالشحن منه\n\n"
+            f"⚠️ لا تقم بإخفاء هوية الحساب\n\n"
             f"🔢 ثم ادخل رقم العملية\n\n"
             f"💱 1 ShamCash USD = 11800"
         )
 
-        qr_button = [["📱 عرض الباركود"], ["القائمة الرئيسية 🔙"]]
+        qr_menu = [
+            ["📱 عرض الباركود"],
+            ["القائمة الرئيسية 🔙"]
+        ]
 
         await update.message.reply_text(
-            "🔷 لعرض باركود شام كاش، اضغط على الزر أدناه:",
-            reply_markup=ReplyKeyboardMarkup(qr_button, resize_keyboard=True)
+            "🔷 لعرض الباركود اضغط الزر:",
+            reply_markup=ReplyKeyboardMarkup(qr_menu, resize_keyboard=True)
         )
 
+    # ===== عرض QR (مصلح 100%) =====
     elif text == "📱 عرض الباركود":
-        await update.message.reply_photo(photo=QR_LINK)
+        try:
+            response = requests.get(QR_LINK)
+            bio = BytesIO(response.content)
+            bio.name = "qr.jpg"
+
+            await update.message.reply_photo(photo=bio)
+        except Exception as e:
+            await update.message.reply_text(f"❌ خطأ بالصورة: {e}")
 
     # ===== سحب =====
     elif text == "سحب الأرباح 💰":
         await update.message.reply_text(
-            "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥\n\nاختر طريقة السحب:",
+            "اختر طريقة السحب:",
             reply_markup=ReplyKeyboardMarkup(withdraw_menu, resize_keyboard=True)
         )
 
-    elif text == "Sham Cash (SYP) 🇸🇾":
-        await update.message.reply_text("💸 أرسل رقمك لاستلام الحوالة")
-
-    # ===== إحالات =====
-    elif text == "روابط و نظام الإحالات 👥":
-        cursor.execute("SELECT referrals FROM users WHERE user_id=?", (user_id,))
-        result = cursor.fetchone()
-        count = result[0] if result else 0
-
-        bot_username = (await context.bot.get_me()).username
-        link = f"https://t.me/{bot_username}?start={user_id}"
-
-        await update.message.reply_text(
-            f"🔥 أهلاً بك في بوت 55bets RagnarZ 🔥\n\n"
-            f"🔗 رابطك:\n{link}\n\n"
-            f"👤 عدد الإحالات: {count}"
-        )
-
-    # ===== إرسال رصيد =====
-    elif text == "إرسال رصيد لصديق 📩":
-        await update.message.reply_text("📩 أرسل آيدي الشخص والمبلغ")
-
-    # ===== كود هدية =====
-    elif text == "تفعيل كود هدية 🎁":
-        await update.message.reply_text("🎁 أرسل كود الهدية")
-
-    # ===== الدعم =====
+    # ===== دعم =====
     elif text == "الدعم الفني 🛠":
-        await update.message.reply_text("📞 تواصل مع الدعم: @RagnarZ778")
+        await update.message.reply_text("📞 الدعم: @RagnarZ777")
 
-    # ===== السجل =====
-    elif text == "سجلك الخاص إيداع/سحب 📜":
-        await update.message.reply_text(
-            "📜 اختر:",
-            reply_markup=ReplyKeyboardMarkup(records_menu, resize_keyboard=True)
-        )
-
-    elif text == "📥 سجل الإيداع":
-        await update.message.reply_text("📥 لا يوجد عمليات")
-
-    elif text == "📤 سجل السحب":
-        await update.message.reply_text("📤 لا يوجد عمليات")
-
-    # ===== رجوع =====
+    # ===== باقي =====
     elif text == "القائمة الرئيسية 🔙":
         await update.message.reply_text(
             "🔥 أهلاً بك في بوت 55bets RagnarZ 🔥",
