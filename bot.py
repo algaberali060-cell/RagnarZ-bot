@@ -1,12 +1,12 @@
 import sqlite3
-from telegram import Update, ReplyKeyboardMarkup, InputFile
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
-SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
-QR_IMAGE = "qr.jpg"
+SHAMCASH_NUMBER = "093XXXXXXX"  # حط رقمك هون
+QR_IMAGE = "qr.jpg"  # ✅ تم تعديل الاسم
 
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
@@ -101,11 +101,12 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"📸 أرسل صورة التحويل بعد الدفع"
         )
 
-        # إرسال QR
+        # ✅ إرسال QR (معدل)
         try:
-            await update.message.reply_photo(photo=InputFile(QR_IMAGE))
+            with open(QR_IMAGE, "rb") as photo:
+                await update.message.reply_photo(photo=photo)
         except:
-            await update.message.reply_text("IMG_٢٠٢٦٠٤٣٠_٢٠١٩٤٦.jpg")
+            await update.message.reply_text("⚠️ تأكد أن صورة QR مرفوعة على GitHub وبنفس الاسم")
 
     # ===== سحب =====
     elif text == "سحب الأرباح 💰":
@@ -132,7 +133,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"👥 رابطك:\n{link}\n\n👤 عدد الإحالات: {count}"
         )
 
-    # ===== باقي =====
+    # ===== رجوع =====
     elif text == "القائمة الرئيسية 🔙":
         await update.message.reply_text(
             "🏠 القائمة الرئيسية",
