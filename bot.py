@@ -8,8 +8,7 @@ TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
 SHAMCASH_CODE = "fdfe47be1ac0be961dc8889406830f9b"
-QR_LINK = "https://raw.githubusercontent.com/algaberali060/RagnarZ-bot/main/qr.jpg"
-
+QR_IMAGE = "qr.jpg"
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
 cursor = conn.cursor()
