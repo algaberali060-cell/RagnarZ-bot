@@ -98,7 +98,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"💰 شحن عبر شام كاش\n\n"
         f"📱 الرقم: {SHAMCASH_NUMBER}\n\n"
-        f"📸 أرسل صورة التحويل بعد الدفع"
+        f"ارسل رقم عملية التحويل"
     )
 
     try:
