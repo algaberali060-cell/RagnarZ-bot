@@ -6,7 +6,7 @@ TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
 SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b"
-QR_IMAGE = "IMG_٢٠٢٦٠٤٣٠_٢٠١٩٤٦.jpg"
+QR_IMAGE = "qr.jpg"
 
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
