@@ -5,7 +5,6 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
-SHAMCASH_NUMBER = "0986530683"
 SHAMCASH_CODE = "fdfe47be1ac0be961dc8889406830f9b"
 QR_LINK = "https://i.ibb.co/wFHW9804/qr.jpg"
 SUPPORT = "@RagnarZ777"
