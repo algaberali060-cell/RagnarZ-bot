@@ -64,8 +64,6 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ===== شام كاش =====
     elif "Sham Cash Auto" in text:
         await update.message.reply_text(
-            f"📨 ارسل الى العنوان:\n\n"
-            f"{SHAMCASH_NUMBER}\n\n"
             f"💳 كود الدفع:\n{SHAMCASH_CODE}\n\n"
             f"🔻 علي محمد 🔻\n\n"
             f"⚠️ لا تقم بإخفاء هوية الحساب\n\n"
