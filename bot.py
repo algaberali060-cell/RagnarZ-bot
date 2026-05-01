@@ -1,15 +1,14 @@
 import sqlite3
-import requests
-from io import BytesIO
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = "8706252372:AAG4Jp5lBsG_QR8ZhbhtZotX5jSaVXgWXuI"
 
 # ===== معلوماتك =====
-SHAMCASH_NUMBER = "fdfe47be1ac0be961dc8889406830f9b" 
+SHAMCASH_NUMBER = "0986530683"
 SHAMCASH_CODE = "fdfe47be1ac0be961dc8889406830f9b"
 QR_LINK = "https://raw.githubusercontent.com/algaberali060/RagnarZ-bot/main/qr.jpg"
+SUPPORT = "@RagnarZ777"
 
 # ===== قاعدة البيانات =====
 conn = sqlite3.connect("bot.db", check_same_thread=False)
@@ -40,6 +39,11 @@ deposit_menu = [
     ["القائمة الرئيسية 🔙"]
 ]
 
+qr_menu = [
+    ["📱 عرض الباركود"],
+    ["القائمة الرئيسية 🔙"]
+]
+
 # ===== /start =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -58,6 +62,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=ReplyKeyboardMarkup(deposit_menu, resize_keyboard=True)
         )
 
+    # ===== شام كاش =====
     elif "Sham Cash Auto" in text:
         await update.message.reply_text(
             f"📨 ارسل الى العنوان:\n\n"
@@ -69,31 +74,38 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"💱 1 ShamCash USD = 11800"
         )
 
-        qr_menu = [
-            ["📱 عرض الباركود"],
-            ["القائمة الرئيسية 🔙"]
-        ]
-
         await update.message.reply_text(
-            "🔷 لعرض الباركود اضغط الزر:",
+            "🔷 لعرض باركود شام كاش اضغط الزر:",
             reply_markup=ReplyKeyboardMarkup(qr_menu, resize_keyboard=True)
         )
 
     # ===== عرض QR =====
     elif text == "📱 عرض الباركود":
         try:
-            response = requests.get(QR_LINK)
-            bio = BytesIO(response.content)
-            bio.name = "qr.jpg"
-
-            await update.message.reply_photo(photo=bio)
+            await update.message.reply_photo(photo=QR_LINK)
         except:
             await update.message.reply_text("❌ فشل تحميل الباركود")
+
+    # ===== سحب =====
+    elif text == "سحب الأرباح 💰":
+        await update.message.reply_text("💸 ارسل طلب السحب للدعم الفني:\n" + SUPPORT)
+
+    # ===== إحالات =====
+    elif text == "روابط و نظام الإحالات 👥":
+        user_id = update.effective_user.id
+        bot_username = (await context.bot.get_me()).username
+        link = f"https://t.me/{bot_username}?start={user_id}"
+
+        await update.message.reply_text(f"🔗 رابطك:\n{link}")
+
+    # ===== دعم =====
+    elif text == "الدعم الفني 🛠":
+        await update.message.reply_text(f"📞 تواصل مع الدعم:\n{SUPPORT}")
 
     # ===== رجوع =====
     elif text == "القائمة الرئيسية 🔙":
         await update.message.reply_text(
-            "القائمة الرئيسية:",
+            "🏠 القائمة الرئيسية",
             reply_markup=ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
         )
 
